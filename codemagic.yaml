@@ -1,0 +1,116 @@
+# Codemagic CI/CD for StoryPeek (Expo app in /mobile).
+# Backend (/backend) is not built here — mobile only.
+#
+# iOS: see commented workflow at the bottom. Requires Apple Developer
+# credentials, ios_signing, and App Store Connect API key in Codemagic.
+
+workflows:
+  expo-mobile-android:
+    name: StoryPeek Mobile — Android
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      node: 20
+      vars:
+        EXPO_NO_DOTENV: "1"
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    scripts:
+      - name: Install dependencies
+        script: |
+          set -e
+          cd mobile
+          npm install
+      - name: Run lint (optional)
+        script: |
+          cd mobile
+          npm run lint --if-present
+      - name: Expo prebuild (Android native project)
+        script: |
+          set -e
+          cd mobile
+          npx expo prebuild --platform android --non-interactive
+      - name: Configure Android SDK path
+        script: |
+          set -e
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/mobile/android/local.properties"
+      - name: Build Android APK (debug — no signing required)
+        script: |
+          set -e
+          cd mobile/android
+          ./gradlew assembleDebug
+      # Release build (enable after adding android_signing in Codemagic UI):
+      # - name: Build Android release
+      #   script: |
+      #     set -e
+      #     cd mobile/android
+      #     ./gradlew bundleRelease
+    artifacts:
+      - mobile/android/app/build/outputs/**/*.apk
+      - mobile/android/app/build/outputs/**/*.aab
+    publishing:
+      email:
+        recipients:
+          - $CM_EMAIL_RECIPIENT
+        notify:
+          success: true
+          failure: true
+
+# ---------------------------------------------------------------------------
+# iOS workflow — enable when Apple signing is ready
+# ---------------------------------------------------------------------------
+# workflows:
+#   expo-mobile-ios:
+#     name: StoryPeek Mobile — iOS
+#     max_build_duration: 90
+#     instance_type: mac_mini_m2
+#     integrations:
+#       app_store_connect: codemagic
+#     environment:
+#       node: 20
+#       ios_signing:
+#         distribution_type: app_store
+#         bundle_identifier: com.storypeek.app
+#       vars:
+#         XCODE_WORKSPACE: "mobile/ios/StoryPeek.xcworkspace"
+#         XCODE_SCHEME: "StoryPeek"
+#     triggering:
+#       events:
+#         - push
+#       branch_patterns:
+#         - pattern: main
+#           include: true
+#     scripts:
+#       - name: Install dependencies
+#         script: |
+#           set -e
+#           cd mobile
+#           npm install
+#       - name: Run lint (optional)
+#         script: |
+#           cd mobile
+#           npm run lint --if-present
+#       - name: Expo prebuild (iOS native project)
+#         script: |
+#           set -e
+#           cd mobile
+#           npx expo prebuild --platform ios --non-interactive
+#       - name: Set up code signing
+#         script: |
+#           xcode-project use-profiles
+#       - name: Build iOS
+#         script: |
+#           set -e
+#           cd mobile/ios
+#           xcodebuild build \
+#             -workspace "$XCODE_WORKSPACE" \
+#             -scheme "$XCODE_SCHEME" \
+#             -configuration Release \
+#             CODE_SIGNING_ALLOWED=NO
+#     artifacts:
+#       - mobile/ios/build/**/*.ipa
