@@ -30,6 +30,22 @@ workflows:
         script: |
           cd mobile
           npm run lint --if-present
+      - name: Patch Expo Gradle publishing for CI debug builds
+        script: |
+          set -e
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("mobile/node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle")
+          text = p.read_text()
+          old = "        release(MavenPublication) {\n          from components.release\n        }"
+          new = "        release(MavenPublication) {\n          def releaseComponent = components.findByName(\"release\")\n          if (releaseComponent != null) {\n            from releaseComponent\n          }\n        }"
+          if old in text:
+            text = text.replace(old, new, 1)
+            p.write_text(text)
+            print(\"Patched ExpoModulesCorePlugin.gradle for release component guard.\")
+          else:
+            print(\"Patch already present or upstream changed; continuing.\")
+          PY
       - name: Expo prebuild (Android native project)
         script: |
           set -e
