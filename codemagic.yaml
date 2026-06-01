@@ -37,14 +37,21 @@ workflows:
           from pathlib import Path
           p = Path("mobile/node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle")
           text = p.read_text()
-          old = "        release(MavenPublication) {\n          from components.release\n        }"
-          new = "        release(MavenPublication) {\n          def releaseComponent = components.findByName(\"release\")\n          if (releaseComponent != null) {\n            from releaseComponent\n          }\n        }"
+          old = '''        release(MavenPublication) {
+          from components.release
+        }'''
+          new = '''        release(MavenPublication) {
+          def releaseComponent = components.findByName("release")
+          if (releaseComponent != null) {
+            from releaseComponent
+          }
+        }'''
           if old in text:
             text = text.replace(old, new, 1)
             p.write_text(text)
-            print(\"Patched ExpoModulesCorePlugin.gradle for release component guard.\")
+            print("Patched ExpoModulesCorePlugin.gradle for release component guard.")
           else:
-            print(\"Patch already present or upstream changed; continuing.\")
+            print("Patch already present or upstream changed; continuing.")
           PY
       - name: Expo prebuild (Android native project)
         script: |
