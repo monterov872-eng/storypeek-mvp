@@ -30,34 +30,33 @@ workflows:
         script: |
           cd mobile
           npm run lint --if-present
-      - name: Patch Expo Gradle publishing for CI debug builds
+      - name: Expo prebuild (Android native project)
+        script: |
+          set -e
+          export CI=1
+          cd mobile
+          npx expo prebuild --platform android
+      - name: Ensure Expo Gradle plugin resolution in settings.gradle
         script: |
           set -e
           python3 - <<'PY'
           from pathlib import Path
-          p = Path("mobile/node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle")
+          p = Path("mobile/android/settings.gradle")
           text = p.read_text()
-          old = '        release(MavenPublication) {\n          from components.release\n        }'
-          new = (
-            '        release(MavenPublication) {\n'
-            '          def releaseComponent = components.findByName("release")\n'
-            '          if (releaseComponent != null) {\n'
-            '            from releaseComponent\n'
-            '          }\n'
-            '        }'
-          )
-          if old in text:
-            text = text.replace(old, new, 1)
-            p.write_text(text)
-            print("Patched ExpoModulesCorePlugin.gradle for release component guard.")
-          else:
-            print("Patch already present or upstream changed; continuing.")
+          repos_block = "pluginManagement {\\n    repositories {\\n        gradlePluginPortal()\\n        google()\\n        mavenCentral()\\n    }"
+          if 'pluginManagement {' in text and 'gradlePluginPortal()' not in text:
+            text = text.replace('pluginManagement {', repos_block, 1)
+          expo_include = "    includeBuild(new File([\"node\", \"--print\", \"require.resolve('expo-modules-core/package.json', { paths: [require.resolve('expo/package.json')] })\"].execute(null, rootDir).text.trim()).getParentFile().toString())"
+          if "require.resolve('expo-modules-core/package.json'" not in text:
+            marker = "    includeBuild(new File([\"node\", \"--print\", \"require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })\"].execute(null, rootDir).text.trim()).getParentFile().toString())"
+            if marker in text:
+              text = text.replace(marker, marker + "\n" + expo_include, 1)
+            else:
+              text = text.replace('pluginManagement {\n', 'pluginManagement {\n' + expo_include + '\n', 1)
+
+          p.write_text(text)
+          print("Patched settings.gradle for Expo module Gradle plugin resolution.")
           PY
-      - name: Expo prebuild (Android native project)
-        script: |
-          set -e
-          cd mobile
-          npx expo prebuild --platform android --non-interactive
       - name: Configure Android SDK path
         script: |
           set -e
