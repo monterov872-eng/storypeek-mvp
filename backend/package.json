@@ -1,0 +1,31 @@
+{
+  "name": "storypeek-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "test:web": "tsx scripts/test-web-provider.ts",
+    "test:integration": "tsx scripts/integration-test.ts",
+    "test:stories": "tsx scripts/test-stories-joss.ts",
+    "test:highlights": "tsx scripts/test-rapid-highlights.ts",
+    "test:highlights:live": "tsx scripts/test-rapid-highlights.ts --live jenifer.nty",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

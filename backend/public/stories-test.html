@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StoryPeek · RapidAPI Stories Test</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0a0a0f;
+        --surface: #14141f;
+        --border: #2a2a3a;
+        --text: #f4f4f8;
+        --muted: #9ca3af;
+        --accent: #7c5cff;
+        --danger: #ff6b6b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 32px 20px 64px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 1.75rem;
+      }
+
+      p {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      form {
+        display: flex;
+        gap: 12px;
+        margin: 24px 0;
+      }
+
+      input {
+        flex: 1;
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        font-size: 16px;
+      }
+
+      button {
+        padding: 14px 20px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--accent);
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .status {
+        min-height: 24px;
+        margin-bottom: 16px;
+      }
+
+      .status.error {
+        color: var(--danger);
+      }
+
+      .meta {
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .media {
+        width: 100%;
+        aspect-ratio: 9 / 16;
+        object-fit: cover;
+        background: #000;
+        display: block;
+      }
+
+      .card-body {
+        padding: 12px 14px 16px;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(124, 92, 255, 0.18);
+        color: #cbbcff;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .card-body small {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted);
+        word-break: break-all;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        overflow: auto;
+        font-size: 12px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>RapidAPI Stories Test</h1>
+      <p>
+        Calls the secure backend route <code>POST /v1/rapid/stories</code>. The RapidAPI key stays on
+        the server only.
+      </p>
+
+      <form id="search-form">
+        <input id="username" type="text" placeholder="Instagram username (e.g. natgeo)" required />
+        <button id="submit-btn" type="submit">Fetch stories</button>
+      </form>
+
+      <div id="status" class="status"></div>
+      <div id="meta" class="meta"></div>
+      <div id="grid" class="grid"></div>
+      <pre id="raw" hidden></pre>
+    </main>
+
+    <script>
+      const form = document.getElementById('search-form');
+      const usernameInput = document.getElementById('username');
+      const submitBtn = document.getElementById('submit-btn');
+      const statusEl = document.getElementById('status');
+      const metaEl = document.getElementById('meta');
+      const gridEl = document.getElementById('grid');
+      const rawEl = document.getElementById('raw');
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;');
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const username = usernameInput.value.trim().replace(/^@/, '');
+        if (!username) return;
+
+        submitBtn.disabled = true;
+        statusEl.textContent = 'Loading stories…';
+        statusEl.className = 'status';
+        metaEl.textContent = '';
+        gridEl.innerHTML = '';
+        rawEl.hidden = true;
+        rawEl.textContent = '';
+
+        try {
+          const response = await fetch('/v1/rapid/stories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username }),
+          });
+
+          const data = await response.json();
+          rawEl.textContent = JSON.stringify(data, null, 2);
+
+          if (!response.ok) {
+            const message = data?.error?.message || 'Request failed';
+            statusEl.textContent = message;
+            statusEl.className = 'status error';
+            rawEl.hidden = false;
+            return;
+          }
+
+          const stories = data.stories || [];
+          statusEl.textContent =
+            stories.length > 0
+              ? `Loaded ${stories.length} ${stories.length === 1 ? 'story' : 'stories'}.`
+              : 'No stories returned for this username.';
+          metaEl.textContent = `@${data.username} · ${data.provider} · ${data.fetchedAt}`;
+
+          gridEl.innerHTML = stories
+            .map((story) => {
+              const mediaUrl = escapeHtml(story.mediaUrl);
+              const thumb = escapeHtml(story.thumbnailUrl || '');
+              const media =
+                story.mediaType === 'video'
+                  ? `<video class="media" src="${mediaUrl}" controls playsinline${thumb ? ` poster="${thumb}"` : ''}></video>`
+                  : `<img class="media" src="${mediaUrl}" alt="Story ${escapeHtml(story.id)}" loading="lazy" />`;
+
+              return `
+                <article class="card">
+                  ${media}
+                  <div class="card-body">
+                    <span class="badge">${escapeHtml(story.mediaType)}</span>
+                    <small>ID: ${escapeHtml(story.id)}</small>
+                    ${story.takenAt ? `<small>Taken: ${escapeHtml(story.takenAt)}</small>` : ''}
+                  </div>
+                </article>
+              `;
+            })
+            .join('');
+
+          if (stories.length === 0) rawEl.hidden = false;
+        } catch (error) {
+          statusEl.textContent = error instanceof Error ? error.message : 'Network error';
+          statusEl.className = 'status error';
+        } finally {
+          submitBtn.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
