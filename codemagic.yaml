@@ -53,13 +53,6 @@ workflows:
     artifacts:
       - mobile/android/app/build/outputs/**/*.apk
       - mobile/android/app/build/outputs/**/*.aab
-    publishing:
-      email:
-        recipients:
-          - $CM_EMAIL_RECIPIENT
-        notify:
-          success: true
-          failure: true
 
 # ---------------------------------------------------------------------------
 # iOS workflow — enable when Apple signing is ready
