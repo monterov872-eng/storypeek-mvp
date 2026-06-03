@@ -13,7 +13,7 @@
     "@expo/vector-icons": "^14.0.4",
     "@react-native-async-storage/async-storage": "2.1.2",
     "expo": "~52.0.23",
-    "expo-asset": "^55.0.17",
+    "expo-asset": "~11.0.5",
     "expo-constants": "~17.0.4",
     "expo-linear-gradient": "~14.0.2",
     "expo-router": "~4.0.15",
