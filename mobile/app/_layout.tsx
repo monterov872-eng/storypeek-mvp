@@ -4,12 +4,14 @@ import { useEffect } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 import { colors } from '@/theme/colors';
 import { track } from '@/services/analytics';
+import { initializeAds } from '@/services/ads';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
   useEffect(() => {
     track('app_open');
+    void initializeAds();
     SplashScreen.hideAsync().catch(() => {});
   }, []);
 
