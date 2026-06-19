@@ -16,7 +16,7 @@ export default function SplashRoute() {
   return (
     <LinearGradient colors={['#0A0A0F', '#14102A', '#0A0A0F']} style={styles.container}>
       <View style={styles.center}>
-        <Text style={styles.logo}>StoryPeek</Text>
+        <Text style={styles.logo}>Silent View</Text>
         <Text style={styles.tagline}>Public stories. No login.</Text>
         <ActivityIndicator color={colors.accent} style={styles.loader} />
       </View>

@@ -28,7 +28,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="home" options={{ title: 'StoryPeek' }} />
+        <Stack.Screen name="home" options={{ title: 'Silent View' }} />
         <Stack.Screen name="profile/[username]" options={{ title: 'Profile' }} />
         <Stack.Screen name="stories/[username]" options={{ title: 'Stories', presentation: 'fullScreenModal' }} />
         <Stack.Screen

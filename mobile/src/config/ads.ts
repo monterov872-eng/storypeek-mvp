@@ -7,7 +7,7 @@ import { TestIds } from 'react-native-google-mobile-ads';
  *   official TEST unit IDs are used. Test ads are safe to click, never generate
  *   revenue, and avoid the invalid-traffic policy strikes that would result
  *   from tapping your own live ad units. They are NEVER used in production.
- * - In production builds, the real StoryPeek unit IDs below are used. An
+ * - In production builds, the real Silent View unit IDs below are used. An
  *   `EXPO_PUBLIC_ADMOB_*` env var may override the default at build time.
  */
 const PRODUCTION_AD_UNIT_IDS = {

@@ -7,7 +7,7 @@ Use this checklist before submitting to the App Store or Google Play. Nothing in
 - [ ] Privacy Policy URL or in-app Privacy Policy (implemented in app under **Legal & privacy**)
 - [ ] Terms of Use (in-app)
 - [ ] Disclaimer (in-app)
-- [ ] Support / contact email configured (`support@silentview.app` — replace with your real inbox)
+- [ ] Support / contact email configured (`Monterov872@gmail.com`)
 - [ ] App screenshots (phone sizes: SE, standard, Pro Max)
 - [ ] App description and subtitle
 - [ ] Content rating questionnaire completed

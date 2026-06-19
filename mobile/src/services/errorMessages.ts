@@ -39,7 +39,7 @@ export function getErrorCopy(error: ApiErrorBody): { title: string; message: str
   if (error.code === 'ACCOUNT_PRIVATE') {
     return {
       title: 'Private account',
-      message: 'This account is private. StoryPeek only supports public profiles.',
+      message: 'This account is private. Silent View only supports public profiles.',
     };
   }
 

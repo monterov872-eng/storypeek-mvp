@@ -2,7 +2,7 @@
 class LegalText {
   LegalText._();
 
-  static const String supportEmail = 'support@silentview.app';
+  static const String supportEmail = 'Monterov872@gmail.com';
 
   static const String privacyPolicy = '''
 Privacy Policy

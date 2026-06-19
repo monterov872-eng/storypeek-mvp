@@ -22,7 +22,7 @@ export default function AboutScreen() {
   return (
     <Screen>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.appName}>StoryPeek</Text>
+        <Text style={styles.appName}>Silent View</Text>
         <Text style={styles.version}>Version 1.0.0</Text>
 
         <View style={styles.disclaimerBox}>

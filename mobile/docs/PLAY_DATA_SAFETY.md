@@ -1,4 +1,4 @@
-# Google Play Data Safety — StoryPeek
+# Google Play Data Safety — Silent View
 
 Answers for the Play Console **App content → Data safety** questionnaire, based on what
 the app actually does in code. Review and adjust if you add analytics, crash reporting, or
@@ -22,7 +22,7 @@ change the backend.
 - **Purposes:** Advertising or marketing; Analytics (Google's); Fraud prevention, security, and compliance
 - **Linked to identity:** No
 
-### 2. Device or other IDs — App-generated installation ID (sent to StoryPeek backend)
+### 2. Device or other IDs — App-generated installation ID (sent to Silent View backend)
 - **Collected:** Yes
 - **Shared:** No (only our own backend)
 - **Processed ephemerally:** Yes (used for short-lived rate limits / unlock sessions)

@@ -1,4 +1,4 @@
-# StoryPeek Privacy Policy
+# Silent View Privacy Policy
 
 _Last updated: June 2026_
 
@@ -9,12 +9,12 @@ in `mobile/src/content/legal.ts` (`PRIVACY_POLICY_URL`). The in-app text in
 
 ---
 
-StoryPeek ("we", "our", or "the app") respects your privacy. This policy explains what
-information the app handles and how it is used. StoryPeek is not affiliated with
+Silent View ("we", "our", or "the app") respects your privacy. This policy explains what
+information the app handles and how it is used. Silent View is not affiliated with
 Instagram or Meta.
 
-## What StoryPeek does
-StoryPeek lets you search public social profiles and view publicly available stories and
+## What Silent View does
+Silent View lets you search public social profiles and view publicly available stories and
 highlights when those items are accessible through our backend service. We do not require
 an Instagram login.
 
@@ -26,7 +26,7 @@ an Instagram login.
 - We do not ask for, collect, or store Instagram passwords or login credentials.
 
 ## Advertising
-StoryPeek shows ads from Google AdMob (a banner and an optional rewarded ad before
+Silent View shows ads from Google AdMob (a banner and an optional rewarded ad before
 unlocking content). To serve ads, Google may collect and use a device advertising
 identifier and related data in accordance with Google's policies:
 - Google Privacy & Terms: https://policies.google.com/privacy
@@ -39,12 +39,12 @@ identifier and related data in accordance with Google's policies:
 - Private account content beyond what is publicly available
 
 ## Third-party services
-StoryPeek uses third-party APIs to retrieve publicly available content and Google AdMob to
+Silent View uses third-party APIs to retrieve publicly available content and Google AdMob to
 display ads. These providers have their own privacy practices. Content availability is not
 guaranteed.
 
 ## Children
-StoryPeek is not directed at children under 13 and we do not knowingly collect data from
+Silent View is not directed at children under 13 and we do not knowingly collect data from
 them.
 
 ## Data retention and your choices
@@ -56,4 +56,4 @@ We may update this policy. Continued use of the app after changes means you acce
 updated policy.
 
 ## Contact
-Questions: support@storypeek.app
+Questions: Monterov872@gmail.com
