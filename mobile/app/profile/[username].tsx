@@ -319,6 +319,7 @@ export default function ProfileScreen() {
       <Screen>
         <ActivityIndicator color={colors.accent} style={{ marginTop: 40 }} />
         <Text style={styles.loadingText}>Loading @{username}…</Text>
+        <Text style={styles.loadingSubtext}>Connecting to server…</Text>
       </Screen>
     );
   }
@@ -460,5 +461,6 @@ const styles = StyleSheet.create({
   hRow: { flexGrow: 0 },
   muted: { color: colors.textMuted, marginTop: 8, fontSize: 13 },
   loadingText: { color: colors.textMuted, textAlign: 'center', marginTop: 12 },
+  loadingSubtext: { color: colors.textMuted, textAlign: 'center', marginTop: 6, fontSize: 13 },
   inlineError: { color: colors.danger, marginTop: 12, lineHeight: 20, fontSize: 14 },
 });

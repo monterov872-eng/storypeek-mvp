@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 const envSchema = z.object({
+  NODE_ENV: z.enum(['development', 'production', 'test']).optional(),
+  /** Render and other hosts inject PORT; defaults to 3001 for local dev. */
   PORT: z.coerce.number().default(3001),
   INSTAGRAM_PROVIDER: z.enum(['mock', 'web', 'rest']).default('web'),
   INSTAGRAM_APP_ID: z.string().default('936619743392459'),

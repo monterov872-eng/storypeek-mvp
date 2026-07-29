@@ -46,7 +46,7 @@ change the backend.
 - Instagram credentials / passwords — never requested or stored
 
 ## Security practices
-- Data encrypted in transit (HTTPS). Ensure the production backend (`EXPO_PUBLIC_API_URL`)
+- Data encrypted in transit (HTTPS). Production backend: `https://storypeek-mvp.onrender.com`
   is HTTPS before release.
 - No login or password handling.
 

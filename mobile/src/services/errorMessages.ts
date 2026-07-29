@@ -72,7 +72,8 @@ export function getErrorCopy(error: ApiErrorBody): { title: string; message: str
   if (error.reason === 'network') {
     return {
       title: 'Connection problem',
-      message: 'Could not reach the server. Make sure the API is running and your network is OK.',
+      message:
+        'Could not reach the server. Run `npm run dev` from the project root to start the backend, then try again.',
     };
   }
 

@@ -7,9 +7,10 @@ interface Props {
   onChangeText: (v: string) => void;
   onSubmit: () => void;
   placeholder?: string;
+  editable?: boolean;
 }
 
-export function SearchBar({ value, onChangeText, onSubmit, placeholder }: Props) {
+export function SearchBar({ value, onChangeText, onSubmit, placeholder, editable = true }: Props) {
   return (
     <View style={styles.wrap}>
       <Ionicons name="search" size={20} color={colors.textMuted} />
@@ -23,6 +24,7 @@ export function SearchBar({ value, onChangeText, onSubmit, placeholder }: Props)
         autoCorrect={false}
         returnKeyType="search"
         onSubmitEditing={onSubmit}
+        editable={editable}
       />
     </View>
   );

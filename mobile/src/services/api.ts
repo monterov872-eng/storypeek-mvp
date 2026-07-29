@@ -7,7 +7,44 @@ import {
   isInstagramBlockedError,
 } from './instagramCooldown';
 
+/** Client-side fetch timeout (ms). Backend may take up to ~12s for Instagram. */
+export const REQUEST_TIMEOUT_MS = 20_000;
+
 export type { ApiErrorCode, ApiErrorReason };
+
+function isNetworkFailure(error: unknown): boolean {
+  if (!(error instanceof Error)) return true;
+  if (error.name === 'AbortError') return false;
+  const msg = error.message.toLowerCase();
+  return (
+    error.name === 'TypeError' ||
+    msg.includes('network request failed') ||
+    msg.includes('failed to fetch') ||
+    msg.includes('network error')
+  );
+}
+
+function toRequestError(error: unknown): ApiError {
+  if (error instanceof ApiError) return error;
+  if (error instanceof Error && error.name === 'AbortError') {
+    return new ApiError({
+      code: 'SERVICE_UNAVAILABLE',
+      message: 'The server took too long to respond.',
+      reason: 'timeout',
+    });
+  }
+  if (isNetworkFailure(error)) {
+    return new ApiError({
+      code: 'SERVICE_UNAVAILABLE',
+      message: 'Could not reach the server. Make sure the API is running.',
+      reason: 'network',
+    });
+  }
+  return new ApiError({
+    code: 'SERVICE_UNAVAILABLE',
+    message: error instanceof Error ? error.message : 'Request failed',
+  });
+}
 
 export interface Profile {
   username: string;
@@ -71,26 +108,36 @@ class ApiClient {
     await assertNotInLocalCooldown();
 
     const deviceId = await getDeviceId();
-    const res = await fetch(`${API_URL}${path}`, {
-      ...init,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-device-id': deviceId,
-        ...(init?.headers ?? {}),
-      },
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      const body = data?.error as (ApiErrorBody & { retryAfter?: number }) | undefined;
-      throw new ApiError({
-        code: body?.code ?? 'SERVICE_UNAVAILABLE',
-        message: body?.message ?? 'Request failed',
-        reason: body?.reason,
-        retryAfter: body?.retryAfter,
+    try {
+      const res = await fetch(`${API_URL}${path}`, {
+        ...init,
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-device-id': deviceId,
+          ...(init?.headers ?? {}),
+        },
       });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const body = data?.error as (ApiErrorBody & { retryAfter?: number }) | undefined;
+        throw new ApiError({
+          code: body?.code ?? 'SERVICE_UNAVAILABLE',
+          message: body?.message ?? 'Request failed',
+          reason: body?.reason,
+          retryAfter: body?.retryAfter,
+        });
+      }
+      return data as T;
+    } catch (error) {
+      throw toRequestError(error);
+    } finally {
+      clearTimeout(timeoutId);
     }
-    return data as T;
   }
 
   getProfile(username: string) {

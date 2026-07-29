@@ -28,7 +28,8 @@
       "env": {
         "EXPO_PUBLIC_USE_TEST_ADS": "0",
         "EXPO_PUBLIC_ADMOB_BANNER_ID": "ca-app-pub-9571654377470287/5137928567",
-        "EXPO_PUBLIC_ADMOB_REWARDED_ID": "ca-app-pub-9571654377470287/6144878151"
+        "EXPO_PUBLIC_ADMOB_REWARDED_ID": "ca-app-pub-9571654377470287/6144878151",
+        "EXPO_PUBLIC_API_URL": "https://storypeek-mvp.onrender.com"
       }
     }
   },

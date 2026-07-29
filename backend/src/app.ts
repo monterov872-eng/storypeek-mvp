@@ -18,6 +18,9 @@ export function createApp(config: AppConfig) {
   const provider = createInstagramProvider(config);
   const app = express();
 
+  // Required behind Render's reverse proxy so rate limits use the client IP.
+  app.set('trust proxy', 1);
+
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(cors({ origin: true }));
   app.use(express.json({ limit: '32kb' }));
