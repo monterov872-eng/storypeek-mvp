@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Silent View",
-    "slug": "storypeek",
+    "slug": "storypeek-mvp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
