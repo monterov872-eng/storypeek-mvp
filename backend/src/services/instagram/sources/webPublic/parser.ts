@@ -170,21 +170,29 @@ export function parseHighlightTray(payload: AnyRecord): HighlightSummary[] {
   const tray: AnyRecord[] = payload?.tray ?? payload?.data?.tray ?? [];
   if (!Array.isArray(tray)) return [];
 
-  return tray.map((h) => {
-    const id = String(h.id ?? h.reel_id ?? '');
-    const cover =
-      pickImageUrl(h.cover_media) ||
-      h.cover_media?.cropped_image_version?.url ||
-      h.cover_media_cropped_thumbnail?.url ||
-      '';
+  return tray
+    .map((h) => {
+      const rawId = String(h.id ?? h.reel_id ?? h.pk ?? '');
+      if (!rawId) return null;
 
-    return {
-      id: id.startsWith('highlight:') ? id : `highlight:${id}`,
-      title: h.title ?? 'Highlight',
-      coverUrl: cover,
-      itemCount: Number(h.media_count ?? h.item_count ?? 0),
-    };
-  });
+      const cover =
+        pickImageUrl(h.cover_media) ||
+        h.cover_media?.cropped_image_version?.url ||
+        h.cover_media?.cover_image?.url ||
+        h.cover_media_cropped_thumbnail?.url ||
+        pickImageUrl(h.thumbnail_image) ||
+        h.thumbnail_url ||
+        h.thumbnail_src ||
+        '';
+
+      return {
+        id: rawId.startsWith('highlight:') ? rawId : `highlight:${rawId}`,
+        title: String(h.title ?? h.name ?? 'Highlight').trim() || 'Highlight',
+        coverUrl: cover,
+        itemCount: Number(h.media_count ?? h.item_count ?? h.total_media_count ?? 0),
+      };
+    })
+    .filter((h): h is HighlightSummary => h !== null);
 }
 
 export function parseHighlightDetail(

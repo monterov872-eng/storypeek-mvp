@@ -8,6 +8,8 @@ import { apiError } from '../middleware/errorHandler.js';
 import { requireDeviceId } from '../middleware/deviceId.js';
 import { profileSearchRateLimiter } from '../middleware/rateLimit.js';
 import { assertInstagramNotInCooldown } from '../services/instagramCooldown.js';
+import { logHighlightsFailure } from '../utils/highlightLog.js';
+import type { HighlightSummary } from '../types.js';
 
 const usernameSchema = z
   .string()
@@ -31,7 +33,17 @@ export function createV1Router(provider: InstagramProvider, config: AppConfig): 
 
       const profile = await provider.getProfile(parsed.data);
       const unlock = getUnlockStatus(req.deviceId!, profile.username);
-      res.json({ profile, unlock });
+
+      let highlights: HighlightSummary[] = [];
+      if (profile.highlightCount > 0 && !profile.isPrivate) {
+        try {
+          highlights = await provider.getHighlights(parsed.data, { deviceId: req.deviceId! });
+        } catch (e) {
+          logHighlightsFailure(parsed.data, 'profile_preview', e);
+        }
+      }
+
+      res.json({ profile, unlock, highlights });
     } catch (e) {
       next(e);
     }
@@ -59,18 +71,11 @@ export function createV1Router(provider: InstagramProvider, config: AppConfig): 
   router.get('/profile/:username/highlights', async (req, res, next) => {
     try {
       const username = usernameSchema.parse(req.params.username);
-      if (!hasUnlock(req.deviceId!, username, 'highlights')) {
-        return apiError(
-          res,
-          'UNLOCK_REQUIRED',
-          'Watch an ad to unlock highlights for this profile.',
-          'validation',
-        );
-      }
       assertInstagramNotInCooldown(req.deviceId!);
       const highlights = await provider.getHighlights(username, { deviceId: req.deviceId! });
       res.json({ highlights });
     } catch (e) {
+      logHighlightsFailure(req.params.username, 'list', e);
       next(e);
     }
   });
@@ -87,6 +92,9 @@ export function createV1Router(provider: InstagramProvider, config: AppConfig): 
       });
       res.json({ highlight });
     } catch (e) {
+      logHighlightsFailure(req.params.username, 'detail', e, {
+        highlightId: req.params.highlightId,
+      });
       next(e);
     }
   });

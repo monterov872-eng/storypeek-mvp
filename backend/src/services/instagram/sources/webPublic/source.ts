@@ -59,6 +59,15 @@ export class WebPublicInstagramSource implements InstagramDataSource {
 
     const highlights = parseHighlightTray(payload);
     if (highlights.length === 0 && resolved.profile.highlightCount > 0) {
+      console.warn(
+        JSON.stringify({
+          ts: new Date().toISOString(),
+          event: 'highlights_tray_empty',
+          username: resolved.profile.username,
+          userId: resolved.userId,
+          expectedCount: resolved.profile.highlightCount,
+        }),
+      );
       throwProvider(
         'SERVICE_UNAVAILABLE',
         'Highlights could not be loaded. Instagram may be limiting requests — try again later.',
