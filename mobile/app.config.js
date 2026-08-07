@@ -18,10 +18,18 @@ module.exports = ({ config }) => {
       plugin === 'expo-build-properties' ||
       (Array.isArray(plugin) && plugin[0] === 'expo-build-properties'),
   );
+  const existingAndroid =
+    buildPropsIndex >= 0 && Array.isArray(plugins[buildPropsIndex])
+      ? (plugins[buildPropsIndex][1]?.android ?? {})
+      : {};
+
   const buildPropsPlugin = [
     'expo-build-properties',
     {
       android: {
+        compileSdkVersion: 35,
+        targetSdkVersion: 35,
+        ...existingAndroid,
         usesCleartextTraffic: !isProduction,
       },
     },
@@ -45,6 +53,7 @@ module.exports = ({ config }) => {
     },
     android: {
       ...config.android,
+      package: 'com.montaviaSilent',
       versionCode: 1,
     },
   };
